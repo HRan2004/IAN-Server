@@ -31,6 +31,11 @@ class CardService {
         return cardMapper.selectByAid(app.aid!!)
     }
 
+    fun lockCard(card: String): Boolean {
+        val card = cardMapper.selectOneByValue(card) ?: return false
+        return cardMapper.updateStatusById(card.id!!, Card.STATUS_LOCKED)>0
+    }
+
     fun checkCard(card: String, app: String, device: String): HashMap<String, Any> {
         val map = HashMap<String, Any>()
         map["success"] = false

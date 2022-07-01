@@ -42,12 +42,14 @@ class DeveloperController : BaseController() {
         return "<p>"+cards.joinToString("</p><p>") { Gson().toJson(it) }+"</p>"
     }
 
-    @GetMapping("/delete")
+    @GetMapping("/lock")
     fun deleteCard(
         @RequestParam("app") app: String,
         @RequestParam("key") key: String,
         @RequestParam("card") card: String,
     ): String {
-        return ""
+        if (!developerService.checkDeveloperPermission(app, key)) return "权限校验失败"
+        val result = cardService.lockCard(card)
+        return if (result) "禁用成功" else "禁用失败"
     }
 }
