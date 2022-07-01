@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Update
 interface CardMapper: BaseMapper<Card> {
 
     @Select("SELECT * FROM card WHERE value = #{value} AND aid = #{aid}")
-    fun selectOneByValueAndAid (value: String, aid: Int): Card?
+    fun selectByValueAndAid (value: String, aid: Int): List<Card>
 
     @Select("SELECT * FROM card WHERE aid = #{aid} ORDER BY id DESC")
     fun selectByAid (aid: Int): List<Card>
@@ -18,6 +18,6 @@ interface CardMapper: BaseMapper<Card> {
     fun updateStatusById (id: Int, status: Int): Integer
 
     @Select("SELECT * FROM card WHERE value = #{value}")
-    fun selectOneByValue(card: String): Card?
+    fun selectByValue(card: String): List<Card>
 
 }

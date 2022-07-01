@@ -10,8 +10,9 @@ class DeveloperService {
     lateinit var appMapper: AppMapper
 
     fun checkDeveloperPermission(appName: String, appKey: String): Boolean {
-        val app = appMapper.selectByName(appName)
-        app?: return false
+        val apps = appMapper.selectByName(appName)
+        if (apps.isEmpty()) return false
+        val app = apps[0]
         return app.key == appKey
     }
 }

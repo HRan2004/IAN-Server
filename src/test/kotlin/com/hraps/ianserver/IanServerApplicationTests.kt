@@ -23,8 +23,8 @@ class IanServerApplicationTests {
 
     @Test
     fun test() {
-        // val r = appMapper.selectByName("IAN")
-        val r = cardService.newCard("IAN", 3)
+        val r = appMapper.selectByName("IAN")
+        // val r = cardService.newCard("IAN", 3)
         println(Gson().toJson(r))
     }
 

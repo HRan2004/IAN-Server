@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping
 interface AppMapper : BaseMapper<App> {
 
     @Select("SELECT * FROM app WHERE name = #{name}")
-    @GetMapping
-    fun selectByName(name: String): App?
+    fun selectByName(name: String): List<App>
 
 }

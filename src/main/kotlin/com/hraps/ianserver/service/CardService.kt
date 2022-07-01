@@ -18,7 +18,9 @@ class CardService {
 
     fun newCard(appName: String, duration: Int): Card? {
         val card = Card()
-        val app = appMapper.selectByName(appName) ?: return null
+        val apps = appMapper.selectByName(appName)
+        if (apps.isEmpty()) return null
+        val app = apps[0]
         card.duration = duration
         card.aid = app.aid
         card.value = Secret.newCardNo()
@@ -27,28 +29,34 @@ class CardService {
     }
 
     fun listCard(appName: String, page: Int): List<Card>? {
-        val app = appMapper.selectByName(appName) ?: return null
+        val apps = appMapper.selectByName(appName)
+        if (apps.isEmpty()) return null
+        val app = apps[0]
         return cardMapper.selectByAid(app.aid!!)
     }
 
     fun lockCard(card: String): Boolean {
-        val card = cardMapper.selectOneByValue(card) ?: return false
+        val cards = cardMapper.selectByValue(card)
+        if (cards.isEmpty()) return false
+        val card = cards[0]
         return cardMapper.updateStatusById(card.id!!, Card.STATUS_LOCKED)>0
     }
 
     fun checkCard(card: String, app: String, device: String): HashMap<String, Any> {
         val map = HashMap<String, Any>()
         map["success"] = false
-        val app = appMapper.selectByName(app)
-        if (app == null) {
+        val apps = appMapper.selectByName(app)
+        if (apps.isEmpty()) {
             map["msg"] = "App不存在"
             return map
         }
-        val card = cardMapper.selectOneByValueAndAid(card, app.aid!!)
-        if (card == null) {
+        val app = apps[0]
+        val cards = cardMapper.selectByValueAndAid(card, app.aid!!)
+        if (cards.isEmpty()) {
             map["msg"] = "卡密不存在"
             return map
         }
+        val card = cards[0]
         if (card.status == Card.STATUS_EXPIRED) {
             map["msg"] = "卡密过期"
             return map

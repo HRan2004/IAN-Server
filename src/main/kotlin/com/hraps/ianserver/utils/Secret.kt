@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 class Secret {
     companion object {
-        val random = Random(System.currentTimeMillis())
+        private val random = Random(System.currentTimeMillis())
 
         fun signMapWithCode(map: HashMap<String, Any>): HashMap<String, Any> {
             map["time"] = Date().time
