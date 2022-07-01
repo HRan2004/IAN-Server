@@ -28,27 +28,36 @@ class UserController: BaseController() {
         val result = HashMap<String, Any>()
 
         val checkStr = "$app$card$device$time"
-        if(!Secret.check(checkStr, nonce, sign)) {
+        if(!Secret.checkSign(checkStr, nonce, sign)) {
             result["code"] = -1
             result["msg"] = "签名校验错误"
-            return json(result)
+            return signJson(result)
         }
         if(time+5000<Date().time) {
             result["code"] = -1
             result["msg"] = "请求超时"
-            return json(result)
+            return signJson(result)
         }
-        val data = cardService.checkCard(app, card, device)
+        val data = cardService.checkCard(card, app, device)
         if (data["success"]==false) {
             result["msg"] = data["msg"]?:"未知错误"
             result["code"] = -1
-            return json(result)
+            return signJson(result)
+        }
+        if(data["bind"] as Boolean){
+            result["code"] = 1
+            result["msg"] = "新卡绑定成功"
+        }else{
+            result["code"] = 0
+            result["msg"] = "验证成功"
         }
         data.remove("success")
-        result["msg"] = "验证成功"
-        result["code"] = 0
+        data.remove("msg")
         result["data"] = data
-        return json(data)
+        return signJson(result)
+    }
+    fun signJson(map: HashMap<String, Any>): String {
+        return json(Secret.signMapWithCode(map))
     }
 
 }

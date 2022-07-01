@@ -69,7 +69,7 @@ class CardService {
             }
         }
         map["success"] = true
-        map["card"] = card
+        map["card"] = card.value
         if(card.status == Card.STATUS_UNUSED){
             map["bind"] = true
             map["msg"] = "新设备已绑定"
@@ -83,6 +83,7 @@ class CardService {
             map["bind"] = false
             map["msg"] = "验证成功"
         }
+        map["tips"] = app.tips
 
         return map
     }
