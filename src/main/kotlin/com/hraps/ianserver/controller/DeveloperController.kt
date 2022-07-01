@@ -38,7 +38,8 @@ class DeveloperController : BaseController() {
     ): String {
         if (!developerService.checkDeveloperPermission(app, key)) return "权限校验失败"
         val cards = cardService.listCard(app, page) ?: return "APP不存在"
-        return Gson().toJson(cards)
+        // return Gson().toJson(cards)
+        return "<p>"+cards.joinToString("</p><p>") { Gson().toJson(it) }+"</p>"
     }
 
     @GetMapping("/delete")

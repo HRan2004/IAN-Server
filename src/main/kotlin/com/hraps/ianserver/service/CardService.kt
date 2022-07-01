@@ -28,7 +28,7 @@ class CardService {
 
     fun listCard(appName: String, page: Int): List<Card>? {
         val app = appMapper.selectByName(appName) ?: return null
-        return cardMapper.selectAllByAid(app.aid!!)
+        return cardMapper.selectByAid(app.aid!!)
     }
 
     fun checkCard(card: String, app: String, device: String): HashMap<String, Any> {
@@ -39,7 +39,7 @@ class CardService {
             map["msg"] = "App不存在"
             return map
         }
-        val card = cardMapper.selectByValueAndAid(card, app.aid!!)
+        val card = cardMapper.selectOneByValueAndAid(card, app.aid!!)
         if (card == null) {
             map["msg"] = "卡密不存在"
             return map
