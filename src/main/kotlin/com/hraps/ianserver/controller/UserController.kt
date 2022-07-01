@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.Date
 
 @RestController
 @RequestMapping("/api/user")
@@ -20,15 +21,21 @@ class UserController: BaseController() {
         @RequestParam("app") app: String,
         @RequestParam("card") card: String,
         @RequestParam("device") device: String,
+        @RequestParam("time") time: Long,
         @RequestParam("nonce") nonce: String,
         @RequestParam("sign") sign: String
     ): String {
         val result = HashMap<String, Any>()
 
-        val checkStr = "$app$card$device"
+        val checkStr = "$app$card$device$time"
         if(!Secret.check(checkStr, nonce, sign)) {
             result["code"] = -1
             result["msg"] = "签名校验错误"
+            return json(result)
+        }
+        if(time+5000<Date().time) {
+            result["code"] = -1
+            result["msg"] = "请求超时"
             return json(result)
         }
         val data = cardService.checkCard(app, card, device)
