@@ -72,7 +72,7 @@ class CardService {
                 return map
             }
             if(card.device != device) {
-                map["msg"] = "卡密不属于本设备"
+                map["msg"] = "卡密已在其他设备绑定"
                 return map
             }
         }
@@ -83,7 +83,7 @@ class CardService {
             map["msg"] = "新设备已绑定"
             card.status = Card.STATUS_USED
             card.device = device
-            card.validity = Date(Date().time + card.duration * 24 * 60 * 60 * 1000)
+            card.validity = Date(Date().time + card.duration.toLong() * 24 * 60 * 60 * 1000)
             cardMapper.updateById(card)
         }
         map["validity"] = card.validity?.time ?: 0

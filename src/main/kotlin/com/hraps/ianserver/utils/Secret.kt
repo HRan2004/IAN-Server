@@ -9,6 +9,14 @@ class Secret {
     companion object {
         private val random = Random(System.currentTimeMillis())
 
+        fun signMap(map: HashMap<String, Any>): String {
+            map["time"] = Date().time
+            map["nonce"] = random.nextLong()
+            val sortedMap = map.toSortedMap()
+            val str = sortedMap.map { it.key + it.value }.joinToString("")
+            return md5(str, Key.SALT)
+        }
+
         fun signMapWithCode(map: HashMap<String, Any>): HashMap<String, Any> {
             map["time"] = Date().time
             map["nonce"] = md5(""+ random.nextInt(100000,999999))

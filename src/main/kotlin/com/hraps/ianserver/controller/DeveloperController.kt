@@ -21,34 +21,37 @@ class DeveloperController : BaseController() {
 
     @GetMapping("/new")
     fun newCard(
-        @RequestParam("app") app: String,
-        @RequestParam("key") key: String,
+        @RequestParam("ak") akStr: String,
         @RequestParam("duration") duration: Int,
     ): String {
-        if (!developerService.checkDeveloperPermission(app, key)) return "权限校验失败"
-        val card = cardService.newCard(app, duration)
+        val ak = akStr.split(":")
+        if(ak.size != 2) return "管理密钥无效"
+        if (!developerService.checkDeveloperPermission(ak[0], ak[1])) return "权限校验失败"
+        val card = cardService.newCard(ak[0], duration)
         return Gson().toJson(card)
     }
 
     @GetMapping("/list")
     fun listCard(
-        @RequestParam("app") app: String,
-        @RequestParam("key") key: String,
+        @RequestParam("ak") akStr: String,
         @RequestParam(value = "page", defaultValue = "1") page: Int,
     ): String {
-        if (!developerService.checkDeveloperPermission(app, key)) return "权限校验失败"
-        val cards = cardService.listCard(app, page) ?: return "APP不存在"
+        val ak = akStr.split(":")
+        if(ak.size != 2) return "管理密钥无效"
+        if (!developerService.checkDeveloperPermission(ak[0], ak[1])) return "权限校验失败"
+        val cards = cardService.listCard(ak[0], page) ?: return "APP不存在"
         // return Gson().toJson(cards)
         return "<p>"+cards.joinToString("</p><p>") { Gson().toJson(it) }+"</p>"
     }
 
     @GetMapping("/lock")
     fun deleteCard(
-        @RequestParam("app") app: String,
-        @RequestParam("key") key: String,
+        @RequestParam("ak") akStr: String,
         @RequestParam("card") card: String,
     ): String {
-        if (!developerService.checkDeveloperPermission(app, key)) return "权限校验失败"
+        val ak = akStr.split(":")
+        if(ak.size != 2) return "管理密钥无效"
+        if (!developerService.checkDeveloperPermission(ak[0], ak[1])) return "权限校验失败"
         val result = cardService.lockCard(card)
         return if (result) "禁用成功" else "禁用失败"
     }
