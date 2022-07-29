@@ -55,4 +55,16 @@ class DeveloperController : BaseController() {
         val result = cardService.lockCard(card)
         return if (result) "禁用成功" else "禁用失败"
     }
+
+    @GetMapping("/unbind")
+    fun unbindCard(
+        @RequestParam("ak") akStr: String,
+        @RequestParam("card") card: String,
+    ): String {
+        val ak = akStr.split(":")
+        if(ak.size != 2) return "管理密钥无效"
+        if (!developerService.checkDeveloperPermission(ak[0], ak[1])) return "权限校验失败"
+        val result = cardService.unbindCard(card)
+        return if (result) "解绑成功" else "解绑失败"
+    }
 }

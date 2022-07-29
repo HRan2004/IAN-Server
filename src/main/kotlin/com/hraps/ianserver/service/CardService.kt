@@ -42,6 +42,14 @@ class CardService {
         return cardMapper.updateStatusById(card.id!!, Card.STATUS_LOCKED)>0
     }
 
+    fun unbindCard(card: String): Boolean {
+        val cards = cardMapper.selectByValue(card)
+        if (cards.isEmpty()) return false
+        val card = cards[0]
+        card.device = ""
+        return cardMapper.updateById(card) == 1
+    }
+
     fun checkCard(card: String, app: String, device: String): HashMap<String, Any> {
         val map = HashMap<String, Any>()
         map["success"] = false
@@ -71,7 +79,10 @@ class CardService {
                 map["msg"] = "卡密已过期"
                 return map
             }
-            if(card.device != device) {
+            if(card.device.isEmpty()){
+                card.device = device
+                map["bind"] = true
+            }else if(card.device != device) {
                 map["msg"] = "卡密已在其他设备绑定"
                 return map
             }
@@ -80,16 +91,18 @@ class CardService {
         map["card"] = card.value
         if(card.status == Card.STATUS_UNUSED){
             map["bind"] = true
-            map["msg"] = "新设备已绑定"
             card.status = Card.STATUS_USED
             card.device = device
             card.validity = Date(Date().time + card.duration.toLong() * 24 * 60 * 60 * 1000)
-            cardMapper.updateById(card)
         }
         map["validity"] = card.validity?.time ?: 0
         if(card.status == Card.STATUS_USED){
             map["bind"] = false
             map["msg"] = "验证成功"
+        }
+        if(map["bind"] == true){
+            map["msg"] = "新设备已绑定"
+            cardMapper.updateById(card)
         }
         map["tips"] = app.tips
 
